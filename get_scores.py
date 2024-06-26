@@ -33,6 +33,7 @@ def generate_vectors(current_metrics, metric_keys, current_vector, all_vectors, 
         if "VC:N/VI:N/VA:N/SC:N/SI:N/SA:N" not in current_vector: 
             vector_json = getJSON(current_vector)
             ctr[0] = ctr[0] + 1
+            print(vector_json)
             all_vectors.append(vector_json)
         else:
              print("Skipping: ",current_vector)
@@ -41,8 +42,8 @@ def generate_vectors(current_metrics, metric_keys, current_vector, all_vectors, 
     current_key = metric_keys[0]
     for value in current_metrics[current_key]:
         generate_vectors(current_metrics, metric_keys[1:], current_vector + f"/{current_key}:{value}", all_vectors, ctr)
-        if ctr[0] == 100:
-            break
+#        if ctr[0] == 100:
+ #           break
 ctr = [0]
 all_vectors = []
 generate_vectors(metrics, list(metrics.keys()), "", all_vectors, ctr)

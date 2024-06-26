@@ -40,3 +40,4 @@ expectedMetricOrder = {
     "RE": ["X", "L", "M", "H"],
     "U":  ["X", "Clear", "Green", "Amber", "Red"],
 }
+module.exports = { expectedMetricOrder }
