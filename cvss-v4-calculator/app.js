@@ -1,31 +1,50 @@
 const express = require('express');
 const app = express();
-const port = 22177;
+const port = 22177;     //Set as required
+const ipad = '0.0.0.0'; //Set as required
 
-// Import necessary functions and data
-//const { cvss_score } = require('./cvss_score.js');
 const { cvss_score, macroVector } = require('./cvss_score.js');
 const cvssLookup_global = require('./cvss_lookup.js');
 const { maxSeverity } = require('./max_severity.js');
-const metrics = require('./metrics.js');
+const expectedMetricOrder = require('./metrics.js');
+const metrics  = require('./metrics.js');
 
 
-// Check if expectedMetricOrder exists in metrics.js, if not, define it
-const expectedMetricOrder = metrics.expectedMetricOrder || {
-    AV: ['N', 'A', 'L', 'P'],
-    AC: ['L', 'H'],
-    AT: ['N', 'P'],
-    PR: ['N', 'L', 'H'],
-    UI: ['N', 'P', 'A'],
-    VC: ['H', 'L', 'N'],
-    VI: ['H', 'L', 'N'],
-    VA: ['H', 'L', 'N'],
-    SC: ['H', 'L', 'N'],
-    SI: ['H', 'L', 'N'],
-    SA: ['H', 'L', 'N']
-};
+// Function to validate vector
+function validateVector(vectorString) {
+    let metrics = vectorString.split("/")
+    prefix = metrics[0];
+    if (prefix != "CVSS:4.0") {
+        console.log("Error invalid vector, missing CVSS v4.0 prefix")
+        return { valid: false, error: "Invalid vector prefix" };
+    }
+    
+    metrics.shift()
+    
+    let oi = 0;
+    const toSelect = {};
+    const expectedEntries = Object.entries(this.expectedMetricOrder);
 
-// Helper function to parse the CVSS vector
+    for (const metric of metrics) {
+        const [key, value] = metric.split(":");
+        const expectedEntry = expectedEntries.find(entry => entry[0] === key);
+
+	if (!expectedEntry) {
+	    return { valid: false, error: `Invalid vector, unexpected metric: ${key}` };
+        }
+	
+	if (!expectedEntry[1].includes(value)) {
+            return { valid: false, error: `Invalid vector, for key ${key}, value ${value} is not in [${expectedEntry[1]}]` };
+        }
+
+        toSelect[key] = value;
+    }
+    return { valid: true, selectedMetrics: toSelect };
+
+} 
+
+
+//Function to add the default "X"s
 function parseVector(vector) {
     const metrics = vector.split('/');
     const cvssSelected = {};
@@ -51,10 +70,10 @@ function parseVector(vector) {
         cvssSelected["AR"] = "X"
         }
 
-console.log("added", cvssSelected)
 
     return cvssSelected;
 }
+
 
 // Function to calculate qualitative score
 function calculateQualScore(score) {
@@ -65,15 +84,6 @@ function calculateQualScore(score) {
     return "Critical";
 }
 
-// Function to validate vector
-function validateVector(cvssSelected) {
-    for (const [metric, expectedValues] of Object.entries(expectedMetricOrder)) {
-        if (cvssSelected[metric] && !expectedValues.includes(cvssSelected[metric])) {
-            return false;
-        }
-    }
-    return true;
-}
 
 app.get('/cvss', (req, res) => {
     const vectorString = req.query.q;
@@ -81,16 +91,15 @@ app.get('/cvss', (req, res) => {
     if (!vectorString) {
         return res.status(400).json({ error: 'Missing vector string' });
     }
-
-    const cvssSelected = parseVector(vectorString);
     
-    if (!validateVector(cvssSelected)) {
-        return res.status(400).json({ error: 'Invalid vector string' });
+    const vvres = validateVector(vectorString);
+    if (!vvres.valid) {
+        return res.status(400).json({ error: vvres.error });
     }
-
+    
+    const cvssSelected = parseVector(vectorString);
     try {
         const macrov = macroVector(cvssSelected)
-    //    console.log("select:", cvssSelected, "lookup:", cvssLookup_global,"maxs:",  maxSeverity, "macv:", macroVector)
         const score = cvss_score(cvssSelected, cvssLookup_global, maxSeverity, macrov);
         const qualScore = calculateQualScore(score);
 
@@ -105,6 +114,6 @@ app.get('/cvss', (req, res) => {
     }
 });
 
-app.listen(port,'0.0.0.0', () => {
-    console.log(`CVSS calculator app listening at http://localhost:${port}`);
+app.listen(port,ipad, () => {
+    console.log(`CVSS calculator API listening at http://localhost:${port}`);
 });

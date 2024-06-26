@@ -1,17 +1,17 @@
-This is the node API implementation of the CVSSv4 calculator present at https://github.com/RedHatProductSecurity/cvss-v4-calculator.git
+This is an API implementation of the CVSSv4 calculator present at https://github.com/RedHatProductSecurity/cvss-v4-calculator.git
 
-app.js in cvss-v4-calculator/ has been rewritten to work as a NodeJS API. Other changes are also included as this implementation doenst have a UI version
+app.js in cvss-v4-calculator/ has been rewritten to work as a NodeJS API. Other changes are also included as this implementation doesn’t have a UI version
 
-get_scores.py is a py file to generate CVSSv4 vector stings and gather scores in cvss_vectors.txt (currently limited to 100 vectors for samplig)
+get_scores.py is a py file to generate CVSSv4 vector strings and gather scores in cvss_vectors.txt (currently limited to 100 vectors for sampling)
 
 
 To setup on a *nix instance:
-1) Navigate to the cvss-v4-calculator/ dirctory
-1) Run "npm install" 
-2) Run "nohup node app.js" (app should be available on port 22177. it can be changed from app.js)
+1) Navigate to the cvss-v4-calculator/ directory
+1) Run "npm install"
+2) Run "npm start" (app should be available on port 22177. it can be changed from app.js)
 
 
- To use the API, send a request to http://10.85.234.18:22177/cvss?q=<vector-string> 
+ To use the API, send a request to http://10.85.234.18:22177/cvss?q=<vector-string>
 
 
  Example:
