@@ -21,6 +21,7 @@ function validateVector(vectorString) {
     metrics.shift()
     
     let oi = 0;
+    let expectedIndex = 0;
     const toSelect = {};
     const expectedEntries = Object.entries(this.expectedMetricOrder);
     const mandatoryMetrics = ['AV', 'AC', 'AT', 'PR', 'UI', 'VC', 'VI', 'VA', 'SC', 'SI', 'SA'];
@@ -28,6 +29,17 @@ function validateVector(vectorString) {
     for (const metric of metrics) {
         const [key, value] = metric.split(":");
         const expectedEntry = expectedEntries.find(entry => entry[0] === key);
+
+	if (key in toSelect) {
+            return { valid: false, error: `Invalid vector, repeated metric: ${key}` };
+        }
+
+        while (expectedIndex < expectedEntries.length && expectedEntries[expectedIndex][0] !== key) {
+            expectedIndex++;
+        }
+        if (expectedIndex >= expectedEntries.length) {
+            return { valid: false, error: `Invalid vector, metric out of sequence: ${key}` };
+        }
 
 	if (!expectedEntry) {
 	    return { valid: false, error: `Invalid vector, unexpected metric: ${key}` };
