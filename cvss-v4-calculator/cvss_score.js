@@ -293,7 +293,6 @@ function m(cvssSelected, metric) {
 }
 
 function macroVector(cvssSelected) {
-    console.log(cvssSelected)
     // EQ1: 0-AV:N and PR:N and UI:N
     //      1-(AV:N or PR:N or UI:N) and not (AV:N and PR:N and UI:N) and not AV:P
     //      2-AV:P or not(AV:N or PR:N or UI:N)
