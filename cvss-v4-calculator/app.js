@@ -100,7 +100,12 @@ app.get('/cvss', (req, res) => {
     
     const vvres = validateVector(vectorString);
     if (!vvres.valid) {
-        return res.status(400).json({ error: vvres.error });
+        return res.json({ 
+		    vector: vectorString,
+                    score: "error",
+                    severity: "error",
+		    error: vvres.error 
+               });
     }
     
     const cvssSelected = parseVector(vectorString);
