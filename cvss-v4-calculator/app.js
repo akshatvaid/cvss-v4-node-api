@@ -15,7 +15,6 @@ function validateVector(vectorString) {
     let metrics = vectorString.split("/")
     prefix = metrics[0];
     if (prefix != "CVSS:4.0") {
-        console.log("Error invalid vector, missing CVSS v4.0 prefix")
         return { valid: false, error: "Invalid vector prefix" };
     }
     
@@ -24,6 +23,7 @@ function validateVector(vectorString) {
     let oi = 0;
     const toSelect = {};
     const expectedEntries = Object.entries(this.expectedMetricOrder);
+    const mandatoryMetrics = ['AV', 'AC', 'AT', 'PR', 'UI', 'VC', 'VI', 'VA', 'SC', 'SI', 'SA'];
 
     for (const metric of metrics) {
         const [key, value] = metric.split(":");
@@ -39,6 +39,12 @@ function validateVector(vectorString) {
 
         toSelect[key] = value;
     }
+
+    const missingMandatoryMetrics = mandatoryMetrics.filter(metric => !(metric in toSelect));
+    if (missingMandatoryMetrics.length > 0) {
+	return { valid: false, error: `Invalid vector, missing mandatory metrics: ${missingMandatoryMetrics.join(', ')}` };
+    }
+
     return { valid: true, selectedMetrics: toSelect };
 
 } 
