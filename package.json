@@ -1,0 +1,20 @@
+{
+  "name": "cvss-v4-calculator",
+  "version": "1.0.0",
+  "description": "Deployed: https://redhatproductsecurity.github.io/cvss-v4-calculator/",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "./cvss-v4-calculator/start.sh",
+    "stop": "forever stop app.js",
+    "restart": "forever restart app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2",
+    "forever": "^4.0.3",
+    "start": "^5.1.0"
+  }
+}
