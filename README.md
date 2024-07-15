@@ -3,7 +3,7 @@ This is an API implementation of the CVSSv4 calculator present at https://github
 app.js from cvss-v4-calculator/ has been rewritten to work as a NodeJS API. Other changes are also included as this implementation doesn’t have a UI version
 
 To setup on a *nix instance:
-1) Download the code in a clean directory 
+1) Download the code in a clean directory
 1) Run "npm install"
 2) Run "npm start" (app should be available on port 22177. it can be changed from app.js)
 
